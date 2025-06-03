@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 
 import org.jmock.MockObjectTestCase;
 import org.radeox.api.engine.context.InitialRenderContext;
-import org.radeox.engine.context.BaseInitialRenderContext;
 import org.radeox.engine.context.BaseRenderContext;
 import org.radeox.filter.context.BaseFilterContext;
 import org.radeox.filter.context.FilterContext;
@@ -49,7 +48,7 @@ abstract class FilterTestSupport extends MockObjectTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        final BaseInitialRenderContext context = InitialRenderContext.defaultContext();
+        final InitialRenderContext context = InitialRenderContext.defaultContext();
         if(filter != null)
         {
             filter.setInitialContext(context);

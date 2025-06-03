@@ -20,7 +20,6 @@ package org.radeox.api.engine.context;
 
 import java.util.Locale;
 
-import org.radeox.engine.context.BaseInitialRenderContext;
 import org.radeox.engine.context.BaseInitialRenderContextBuilder;
 import org.radeox.filter.FilterPipe;
 import org.radeox.util.i18n.BaseResourceBundle;
@@ -60,7 +59,7 @@ public interface InitialRenderContext extends RenderContext
         return new BaseInitialRenderContextBuilder();
     }
 
-    public static BaseInitialRenderContext defaultContext()
+    public static InitialRenderContext defaultContext()
     {
         return builder().build();
     }
