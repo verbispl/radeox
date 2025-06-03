@@ -24,3 +24,5 @@ org.radeox.filter.LinkTestFilter_Creole
 #org.radeox.filter.WikiLinkFilter
 #Should be called first, done with before()
 org.radeox.filter.EscapeFilter
+#Should be called last, the value of parameters should not be transfomrated
+org.radeox.filter.LiteralParamFilter

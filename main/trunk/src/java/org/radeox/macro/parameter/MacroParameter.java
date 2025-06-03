@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,52 +16,54 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.macro.parameter;
-
-import org.radeox.api.engine.context.RenderContext;
 
 import java.util.Map;
 
+import org.radeox.api.engine.context.RenderContext;
+
 /**
- * Encapsulates parameters for an executed Macro call
+ * Encapsulates parameters for an executed Macro call.
  *
  * @author Stephan J. Schmidt
  * @version $Id: MacroParameter.java,v 1.10 2004/01/20 12:07:53 stephan Exp $
  */
+public interface MacroParameter
+{
+    public void setParams(String stringParams);
 
-public interface MacroParameter {
-  public void setParams(String stringParams);
+    public String getContent();
 
-  public String getContent();
+    public void setContent(String content);
 
-  public void setContent(String content);
+    public int getLength();
 
-  public int getLength();
+    public String get(String index, int idx);
 
-  public String get(String index, int idx);
+    public String get(String index);
 
-  public String get(String index);
+    public String get(String key1, String key2);
 
-  public String get(int index);
+    public String get(int index);
 
-  public Map getParams();
+    public Map<String,String> getParams();
 
-  public void setStart(int start);
+    public void setStart(int start);
 
-  public void setEnd(int end);
+    public void setEnd(int end);
 
-  public int getStart();
+    public int getStart();
 
-  public int getEnd();
+    public int getEnd();
 
-  public void setContentStart(int start);
+    public void setContentStart(int start);
 
-  public void setContentEnd(int end);
+    public void setContentEnd(int end);
 
-  public int getContentStart();
+    public int getContentStart();
 
-  public int getContentEnd();
+    public int getContentEnd();
 
-  public RenderContext getContext();
+    public RenderContext getContext();
+
 }

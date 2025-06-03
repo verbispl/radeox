@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,42 +16,47 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.filter;
 
 import org.radeox.api.engine.context.InitialRenderContext;
 
-/*
- * Abstract Filter Class that supplies the
- * Filter interface. Concrete Filters should
- * inherit from Filter. Filters transform a
- * String (usually snip content) to another String
- * (usually HTML).
+/**
+ * Abstract Filter Class that supplies the Filter interface.
+ * <p>
+ *   Concrete Filters should inherit from Filter. Filters transform a String
+ *   (usually snip content) to another String (usually HTML).
+ * </p>
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: FilterSupport.java,v 1.9 2003/10/07 08:20:24 stephan Exp $
  */
+public abstract class FilterSupport implements Filter
+{
+    protected InitialRenderContext initialContext;
 
-public abstract class FilterSupport implements Filter {
-  protected InitialRenderContext initialContext;
+    @Override
+    public String[] replaces()
+    {
+        return FilterPipe.NO_REPLACES;
+    }
 
-  public FilterSupport() {
-  }
+    @Override
+    public String[] before()
+    {
+        return FilterPipe.EMPTY_BEFORE;
+    }
 
-  public String[] replaces() {
-    return FilterPipe.NO_REPLACES;
-  }
+    @Override
+    public void setInitialContext(final InitialRenderContext context)
+    {
+        this.initialContext = context;
+    }
 
-  public String[] before() {
-    return FilterPipe.EMPTY_BEFORE;
-  }
+    @Override
+    public String getDescription()
+    {
+        return "";
+    }
 
-  public void setInitialContext(InitialRenderContext context) {
-     this.initialContext = context;
-  }
-
-  public String getDescription() {
-    return "";
-  }
 }

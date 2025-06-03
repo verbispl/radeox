@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,28 +16,27 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.filter;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+public class ItalicFilterTest extends FilterTestSupport
+{
+    @Override
+    protected void setUp() throws Exception
+    {
+        filter = new ItalicFilter();
+        super.setUp();
+    }
 
-public class ItalicFilterTest extends FilterTestSupport {
-  protected void setUp() throws Exception {
-    filter = new ItalicFilter();
-    super.setUp();
-  }
+    public void testItalic()
+    {
+        assertEquals("<i class=\"italic\">Text</i>",
+            filter.filter("~~Text~~", context));
+    }
 
-  public static Test suite() {
-    return new TestSuite(FilterTestSupport.class);
-  }
-
-  public void testItalic() {
-    assertEquals("<i class=\"italic\">Text</i>", filter.filter("~~Text~~", context));
-  }
-
-  public void testItalicCreole() {
-    assertEquals("<i class=\"italic\">Text</i>", filterCreole.filter("//Text//", context));
-  }
+    public void testItalicCreole()
+    {
+        assertEquals("<i class=\"italic\">Text</i>",
+            filterCreole.filter("//Text//", context));
+    }
 
 }

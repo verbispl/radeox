@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,33 +16,38 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.filter.context;
 
 import org.radeox.api.engine.context.RenderContext;
 import org.radeox.macro.parameter.BaseMacroParameter;
 import org.radeox.macro.parameter.MacroParameter;
 
-
 /**
- * Base impementation for FilterContext
+ * Base impementation for FilterContext.
  *
  * @author Stephan J. Schmidt
  * @version $Id: BaseFilterContext.java,v 1.6 2003/10/07 08:20:24 stephan Exp $
  */
+public class BaseFilterContext implements FilterContext
+{
+    protected RenderContext context;
 
-public class BaseFilterContext implements FilterContext {
-  protected RenderContext context;
+    @Override
+    public MacroParameter getMacroParameter()
+    {
+        return new BaseMacroParameter(context);
+    }
 
-  public MacroParameter getMacroParameter() {
-    return new BaseMacroParameter(context);
-  }
+    @Override
+    public void setRenderContext(final RenderContext context)
+    {
+        this.context = context;
+    }
 
-  public void setRenderContext(RenderContext context) {
-    this.context = context;
-  }
+    @Override
+    public RenderContext getRenderContext()
+    {
+        return context;
+    }
 
-  public RenderContext getRenderContext() {
-    return context;
-  }
 }

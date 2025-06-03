@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -18,28 +18,30 @@
 
 package org.radeox.filter;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.radeox.filter.ParamFilter;
+import org.radeox.filter.context.ParamContext;
 
-import java.util.HashMap;
-import java.util.Map;
+/**
+ * JUnit test for {@link ParamFilter}.
+ *
+ * <p>Created on 2004-11-03</p>
+ *
+ * @author stephan
+ * @version $Id$
+ */
+public class ParamFilterTest extends FilterTestSupport
+{
+    @Override
+    protected void setUp() throws Exception
+    {
+        filter = new ParamFilter();
+        super.setUp();
+    }
 
-public class ParamFilterTest extends FilterTestSupport {
+    public void testParam()
+    {
+        final ParamContext params = ParamContext.getOrCreate(context.getRenderContext());
+        params.put("var1", "test");
+        assertEquals("test", filter.filter("{$var1}", context));
+    }
 
-  protected void setUp() throws Exception {
-    filter = new ParamFilter();
-    super.setUp();
-  }
-
-  public static Test suite() {
-    return new TestSuite(ParamFilterTest.class);
-  }
-
-  public void testParam() {
-    Map params = new HashMap();
-    params.put("var1","test");
-    context.getRenderContext().setParameters(params);
-    assertEquals("test", filter.filter("{$var1}", context));
-  }
 }

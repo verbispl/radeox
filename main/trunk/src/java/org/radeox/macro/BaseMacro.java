@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,79 +16,69 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.macro;
 
+import java.util.Locale;
+import java.util.MissingResourceException;
+
 import org.radeox.api.engine.context.InitialRenderContext;
-import org.radeox.macro.parameter.MacroParameter;
+import org.radeox.util.i18n.BaseResourceBundle;
 
-import java.io.IOException;
-import java.io.Writer;
-
-/*
- * Class that implements base functionality to write macros
+/**
+ * Class that implements base functionality to write macros.
+ *
+ * <p>Created on 2004-11-033</p>
  *
  * @author stephan
+ * @author <a href="mailto:marcin.golebski@verbis.pl">Marcin Golebski</a>
  * @version $Id: BaseMacro.java,v 1.3 2004/04/27 19:30:38 leo Exp $
  */
+public abstract class BaseMacro implements Macro, LocaleMacro
+{
+    protected InitialRenderContext initialContext;
 
-public abstract class BaseMacro implements Macro {
-  protected InitialRenderContext initialContext;
+    @Override
+    public void setInitialContext(final InitialRenderContext context)
+    {
+        this.initialContext = context;
+    }
 
-  protected String description = " ";
-  protected String[] paramDescription = {};
+    @Override
+    public String getDescription(final Locale locale)
+    {
+        final String bundleName = initialContext.getLanguageBuldleName();
+        final BaseResourceBundle bundle = initialContext.getBundle(locale,
+            bundleName);
+        return bundle.getString(getLocaleKey() + ".description");
+    }
 
-  /**
-   * Get the name of the macro. This is used to map a macro
-   * in the input to the macro which should be called.
-   * The method has to be implemented by subclassing classes.
-   *
-   * @return name Name of the Macro
-   */
-  public abstract String getName();
+    @Override
+    public String[] getParamDescription(final Locale locale)
+    {
+        final String buldleName = initialContext.getLanguageBuldleName();
+        final BaseResourceBundle bundle = initialContext.getBundle(locale,
+            buldleName);
+        try
+        {
+            return bundle.get(getLocaleKey() + ".params").split(";");
+        }
+        catch(final MissingResourceException e)
+        {
+            return new String[0];
+        }
+    }
 
-  /**
-   * Get a description of the macro. This description explains
-   * in a short way what the macro does
-   *
-   * @return description A string describing the macro
-   */
-  public String getDescription() {
-    return description;
-  }
+    @Override
+    public String toString()
+    {
+        return getName();
+    }
 
-  /**
-   * Get a description of the paramters of the macro. The method
-   * returns an array with an String entry for every parameter.
-   * The format is {"1: description", ...} where 1 is the position
-   * of the parameter.
-   *
-   * @return description Array describing the parameters of the macro
-   */
-  public String[] getParamDescription() {
-    return paramDescription;
-  }
+    @Override
+    public int compareTo(final Object object)
+    {
+        final Macro macro = (Macro) object;
+        return getName().compareTo(macro.getName());
+    }
 
-  public void setInitialContext(InitialRenderContext context) {
-    this.initialContext = context;
-  }
-
-  /**
-   * Execute the macro. This method is called by MacroFilter to
-   * handle macros.
-   *
-   * @param writer A write where the macro should write its output to
-   * @param params Macro parameters with the parameters the macro is called with
-   */
-  public abstract void execute(Writer writer, MacroParameter params)
-      throws IllegalArgumentException, IOException;
-
-  public String toString() {
-    return getName();
-  }
-
-  public int compareTo(Object object) {
-    Macro macro = (Macro) object;
-    return getName().compareTo(macro.getName());
-  }
 }

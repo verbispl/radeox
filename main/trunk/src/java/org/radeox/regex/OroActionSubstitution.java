@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,34 +16,38 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.regex;
 
-import org.apache.oro.text.regex.*;
 import org.apache.oro.text.regex.MatchResult;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.PatternMatcherInput;
+import org.apache.oro.text.regex.StringSubstitution;
 
-/*
- * Called with a MatchResult which is substituted
- * This implementation is needed by Jakarta ORO
+/**
+ * Called with a MatchResult which is substituted This implementation is needed
+ * by Jakarta ORO.
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: OroActionSubstitution.java,v 1.1 2004/04/20 13:45:36 stephan Exp $
  */
+public class OroActionSubstitution extends StringSubstitution
+{
+    private final org.radeox.regex.Substitution substitution;
 
-public class OroActionSubstitution extends StringSubstitution {
-  private org.radeox.regex.Substitution substitution;
+    public OroActionSubstitution(final Substitution substitution)
+    {
+        this.substitution = substitution;
+    }
 
-  public OroActionSubstitution(Substitution substitution) {
-    this.substitution = substitution;
-  }
+    @Override
+    public void appendSubstitution(final StringBuffer stringBuffer,
+        final MatchResult matchResult, final int i,
+        final PatternMatcherInput patternMatcherInput,
+        final PatternMatcher patternMatcher,
+        final org.apache.oro.text.regex.Pattern pattern)
+    {
+        substitution.handleMatch(stringBuffer, new OroMatchResult(matchResult));
+    }
 
-  public void appendSubstitution(StringBuffer stringBuffer,
-                                 MatchResult matchResult,
-                                 int i,
-                                 PatternMatcherInput patternMatcherInput,
-                                 PatternMatcher patternMatcher,
-                                 org.apache.oro.text.regex.Pattern pattern) {
-    substitution.handleMatch(stringBuffer, new OroMatchResult(matchResult));
-  }
 }

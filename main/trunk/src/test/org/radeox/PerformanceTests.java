@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -18,47 +18,52 @@
 
 package org.radeox;
 
-import com.clarkware.junitperf.TimedTest;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.radeox.api.engine.RenderEngine;
 import org.radeox.engine.BaseRenderEngine;
 import org.radeox.engine.context.BaseRenderContext;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import com.clarkware.junitperf.TimedTest;
 
-public class PerformanceTests {
-  public static void main(String[] args) throws IOException {
-    TestRunner.run(suite());
-  }
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-  public static Test suite() throws IOException {
-    // get test markup from text file
-    File wikiTxt = new File("wiki.txt");
-    BufferedReader reader = new BufferedReader(new FileReader(wikiTxt.getCanonicalFile()));
-    StringBuffer input = new StringBuffer();
-    String tmp;
-    while ((tmp = reader.readLine()) != null) {
-      input.append(tmp);
+public class PerformanceTests
+{
+    public static Test suite() throws IOException
+    {
+        // get test markup from text file
+        final InputStream wiki = PerformanceTests.class.getClassLoader()
+            .getResourceAsStream("wiki.txt");
+        final BufferedReader reader = new BufferedReader(
+            new InputStreamReader(wiki));
+        final StringBuilder input = new StringBuilder();
+        String tmp;
+        while((tmp = reader.readLine()) != null)
+        {
+            input.append(tmp);
+        }
+        final RenderEngine engine = new BaseRenderEngine();
+        System.err
+            .println(engine.render("__initialized__", new BaseRenderContext()));
+
+        final TestSuite s = new TestSuite();
+        final long maxElapsedTime = 30 * 1000; // 30s
+        final StringBuilder testString = new StringBuilder();
+        for(int i = 0; i < 10; i++)
+        {
+            testString.append(input);
+            final Test renderEngineTest = new RenderEnginePerformanceTest(
+                testString.toString());
+            final Test timedTest = new TimedTest(renderEngineTest,
+                maxElapsedTime, false);
+            s.addTest(timedTest);
+        }
+        return s;
     }
-    RenderEngine engine = new BaseRenderEngine();
-    System.err.println(engine.render("__initialized__", new BaseRenderContext()));
-
-    TestSuite s = new TestSuite();
-    long maxElapsedTime = 30 * 1000; // 30s
-    StringBuffer testString = new StringBuffer();
-    for (int i = 0; i < 10; i++) {
-      testString.append(input);
-      Test renderEngineTest = new RenderEnginePerformanceTest(testString.toString());
-      Test timedTest = new TimedTest(renderEngineTest, maxElapsedTime, false);
-      s.addTest(timedTest);
-    }
-    return s;
-  }
-
 
 }

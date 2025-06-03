@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -19,23 +19,26 @@
 
 package org.radeox.regex;
 
-/*
- * Called with a MatchResult which is substituted
+/**
+ * Called with a MatchResult which is substituted.
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: Substitution.java,v 1.3 2004/04/20 09:47:03 stephan Exp $
  */
-
-public interface Substitution {
-  /**
-   * When substituting matches in a matcher, the handleMatch method
-   * of the supplied substitution is called with a MatchResult.
-   * This method then does something with the match and replaces
-   * the match with some output, like replace all 2*2 with (2*2 =) 4.
-   *
-   * @param buffer StringBuffer to append the output to
-   * @param result MatchResult with the match
-   */
+public interface Substitution
+{
+   /**
+    * When substituting matches in a matcher, the handleMatch method of the
+    * supplied substitution is called with a MatchResult.
+    * <p>
+    *   This method then does something with the match and replaces the match with
+    *   some output, like replace all 2*2 with (2*2 =) 4.
+    * </p>
+    *
+    * @param buffer StringBuilder to append the output to
+    * @param result MatchResult with the match
+    */
     public void handleMatch(StringBuffer buffer, MatchResult result);
+
 }

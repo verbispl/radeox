@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,59 +16,84 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.filter.mock;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 
 import org.radeox.api.engine.RenderEngine;
 import org.radeox.api.engine.WikiRenderEngine;
-import org.radeox.api.engine.context.RenderContext;
 import org.radeox.api.engine.context.InitialRenderContext;
+import org.radeox.api.engine.context.RenderContext;
 import org.radeox.util.Encoder;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.io.Reader;
+public class MockWikiRenderEngine implements RenderEngine, WikiRenderEngine
+{
 
-public class MockWikiRenderEngine implements RenderEngine, WikiRenderEngine {
-  
-  public InitialRenderContext getInitialRenderContext() {
-    return null;
-  }
+    @Override
+    public InitialRenderContext getInitialRenderContext()
+    {
+        return null;
+    }
 
-  public boolean exists(String name) {
-    return name.equals("SnipSnap") || name.equals("stephan");
-  }
+    @Override
+    public boolean exists(final String name)
+    {
+        return name.equals("SnipSnap") || name.equals("stephan");
+    }
 
-  public boolean showCreate() {
-    return true;
-  }
+    @Override
+    public boolean showCreate()
+    {
+        return true;
+    }
 
-  public void appendLink(StringBuffer buffer, String name, String view, String anchor) {
-    buffer.append("link:"+name+"|"+view+"#"+anchor);
-  }
+    @Override
+    public void appendLink(final StringBuffer buffer, final String name,
+        final String view, final String anchor)
+    {
+        buffer.append("link:" + name + "|" + view + "#" + anchor);
+    }
 
-  public void appendLink(StringBuffer buffer, String name, String view) {
-    buffer.append("link:" + name + "|" +view);
-  }
+    @Override
+    public void appendLink(final StringBuffer buffer, final String name,
+        final String view)
+    {
+        buffer.append("link:" + name + "|" + view);
+    }
 
-  public void appendCreateLink(StringBuffer buffer, String name, String view) {
-    buffer.append("'").append(name).append("' - ");
-    buffer.append("'").append(Encoder.escape(name)).append("'");
-  }
+    @Override
+    public void appendCreateLink(final StringBuffer buffer, final String name,
+        final String view)
+    {
+        buffer.append("'").append(name).append("' - ");
+        buffer.append("'").append(Encoder.escape(name)).append("'");
+    }
 
-  public String getName() {
-    return "mock-wiki";
-  }
+    @Override
+    public String getName()
+    {
+        return "mock-wiki";
+    }
 
-  public String render(String content, RenderContext context) {
-    return null;
-  }
+    @Override
+    public String render(final String content, final RenderContext context)
+    {
+        return null;
+    }
 
-  public void render(Writer out, String content, RenderContext context) throws IOException {
-  }
+    @Override
+    public void render(final Writer out, final String content,
+        final RenderContext context) throws IOException
+    {
+    }
 
+    @Override
+    public String render(final Reader in, final RenderContext context)
+        throws IOException
+    {
+        return null;
+    }
 
-  public String render(Reader in, RenderContext context) throws IOException {
-    return null;
-  }
 }

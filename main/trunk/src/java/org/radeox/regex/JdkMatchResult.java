@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,42 +16,52 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.regex;
 
-/*
- * The result when a Matcher object finds matches in some input
- * Implementation for regex package in JDK 1.4
+/**
+ * The result when a Matcher object finds matches in some input Implementation
+ * for regex package in JDK 1.4.
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: JdkMatchResult.java,v 1.1 2004/04/16 07:37:52 stephan Exp $
  */
+public class JdkMatchResult extends MatchResult
+{
+    private final java.util.regex.Matcher matcher;
 
-public class JdkMatchResult extends MatchResult {
-  private java.util.regex.Matcher matcher;
+    public JdkMatchResult(final java.util.regex.Matcher matcher)
+    {
+        this.matcher = matcher;
+    }
 
-  public JdkMatchResult(java.util.regex.Matcher matcher) {
-    this.matcher = matcher;
-  }
+    public JdkMatchResult(final Matcher matcher)
+    {
+        this.matcher = ((JdkMatcher) matcher).getMatcher();
+    }
 
-  public JdkMatchResult(Matcher matcher) {
-    this.matcher = ((JdkMatcher) matcher).getMatcher();
-  }
+    @Override
+    public int groups()
+    {
+        return matcher.groupCount();
+    }
 
-  public int groups() {
-    return matcher.groupCount();
-  }
+    @Override
+    public String group(final int i)
+    {
+        return matcher.group(i);
+    }
 
-  public String group(int i) {
-    return matcher.group(i);
-  }
+    @Override
+    public int beginOffset(final int i)
+    {
+        return matcher.start(i);
+    }
 
-  public int beginOffset(int i) {
-    return matcher.start(i);
-  }
+    @Override
+    public int endOffset(final int i)
+    {
+        return matcher.end(i);
+    }
 
-  public int endOffset(int i) {
-    return matcher.end(i);
-  }
 }

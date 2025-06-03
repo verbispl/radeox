@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,40 +16,43 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.groovy;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.codehaus.groovy.control.CompilationFailedException;
+import org.radeox.example.RadeoxTemplateEngine;
+
+import groovy.lang.Writable;
 import groovy.text.Template;
 import groovy.text.TemplateEngine;
 import junit.framework.TestCase;
 
-import java.util.HashMap;
-import java.util.Map;
+public class RadeoxTemplateEngineTest extends TestCase
+{
 
-import org.radeox.example.RadeoxTemplateEngine;
-
-public class RadeoxTemplateEngineTest extends TestCase {
-
-  public RadeoxTemplateEngineTest(String name) {
-    super(name);
-  }
-
-  public void testRadeoxTemplate() {
-    String text = "__Dear__ ${firstname}";
-
-    Map binding = new HashMap();
-    binding.put("firstname", "stephan");
-
-    TemplateEngine engine = new RadeoxTemplateEngine();
-    Template template = null;
-    try {
-      template = engine.createTemplate(text);
-    } catch (Exception e) {
-      e.printStackTrace();
+    public RadeoxTemplateEngineTest(final String name)
+    {
+        super(name);
     }
-    template.setBinding(binding);
 
-    String result = "<b class=\"bold\">Dear</b> stephan";
-    assertEquals(result, template.toString());
-  }
+    public void testRadeoxTemplate() throws CompilationFailedException,
+        FileNotFoundException, ClassNotFoundException, IOException
+    {
+        final String text = "__Dear__ ${firstname}";
+
+        final Map<String, String> binding = new HashMap<>();
+        binding.put("firstname", "stephan");
+
+        final TemplateEngine engine = new RadeoxTemplateEngine();
+        final Template template = engine.createTemplate(text);
+        final Writable make = template.make(binding);
+
+        final String result = "<b class=\"bold\">Dear</b> stephan";
+        assertEquals(result, make.toString());
+    }
+
 }

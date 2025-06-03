@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -18,31 +18,36 @@
 
 package org.radeox.macro;
 
-import org.radeox.macro.parameter.MacroParameter;
-
 import java.io.IOException;
 import java.io.Writer;
 
-/*
+import org.radeox.macro.parameter.MacroParameter;
+
+/**
  * Displays a mail to link.
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: MailToMacro.java,v 1.5 2004/04/27 19:30:38 leo Exp $
  */
-
-public class MailToMacro extends LocalePreserved {
-  public String getLocaleKey() {
-    return "macro.mailto";
-  }
-
-  public void execute(Writer writer, MacroParameter params)
-      throws IllegalArgumentException, IOException {
-
-    if (params.getLength() == 1) {
-      String mail = params.get("0");
-      writer.write("<a href=\"mailto:"+mail+"\">"+mail+"</a>");
+public class MailToMacro extends Preserved
+{
+    @Override
+    public String getLocaleKey()
+    {
+        return "macro.mailto";
     }
-    return;
-  }
+
+    @Override
+    public void execute(final Writer writer, final MacroParameter params)
+        throws IllegalArgumentException, IOException
+    {
+
+        if(params.getLength() == 1)
+        {
+            final String mail = params.get("0");
+            writer.write("<a href=\"mailto:" + mail + "\">" + mail + "</a>");
+        }
+    }
+
 }

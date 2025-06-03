@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -18,159 +18,183 @@
 
 package org.radeox.filter;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.radeox.filter.context.FilterContext;
 import org.radeox.filter.regex.LocaleRegexTokenFilter;
 import org.radeox.regex.MatchResult;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-
-/*
- * Listfilter checks for lists in in its input. These are
- * transformed to output lists, e.g. in HTML. Recognices
- * different lists like numbered lists, unnumbered lists,
- * greek lists, alpha lists etc.
+/**
+ * Listfilter checks for lists in in its input. These are transformed to output
+ * lists, e.g. in HTML.
+ * <p>
+ *   Recognices different lists like numbered lists, unnumbered lists, greek
+ *   lists, alpha lists etc.
+ * </p>
  *
  * @credits nested list support by Davor Cubranic
  * @author stephan
  * @team sonicteam
  * @version $Id: ListFilter.java,v 1.17 2004/04/15 13:56:14 stephan Exp $
  */
+public class ListFilter extends LocaleRegexTokenFilter implements CacheFilter
+{
+    private static final Log LOG = LogFactory.getLog(ListFilter.class);
 
-public class ListFilter extends LocaleRegexTokenFilter implements CacheFilter {
-  private static Log log = LogFactory.getLog(ListFilter.class);
+    private static final String NEWLINE = "\n";
+    private static final String LI_OPEN = "<li>";
+    private static final String LI_CLOSE = "</li>";
+    private static final String UL_CLOSE = "</ul>";
+    private static final String OL_CLOSE = "</ol>";
 
-  private final static Map openList = new HashMap();
-  private final static Map closeList = new HashMap();
+    private static final Map<Character,String> openList = new HashMap<>();
+    private static final Map<Character,String> closeList = new HashMap<>();
 
-  private static final String NEWLINE = "\n";
-  private static final String LI_OPEN = "<li>";
-  private static final String LI_CLOSE = "</li>";
-  private static final String UL_CLOSE = "</ul>";
-  private static final String OL_CLOSE = "</ol>";
-
-  protected String getLocaleKey() {
-    return "filter.list";
-  }
-
-  protected boolean isSingleLine() {
-    return false;
-  }
-
-  public ListFilter() {
-    super();
-    openList.put(new Character('-'), "<ul class=\"minus\">");
-    openList.put(new Character('*'), "<ul class=\"star\">");
-    openList.put(new Character('#'), "<ol>");
-    openList.put(new Character('i'), "<ol class=\"roman\">");
-    openList.put(new Character('I'), "<ol class=\"ROMAN\">");
-    openList.put(new Character('a'), "<ol class=\"alpha\">");
-    openList.put(new Character('A'), "<ol class=\"ALPHA\">");
-    openList.put(new Character('g'), "<ol class=\"greek\">");
-    openList.put(new Character('h'), "<ol class=\"hiragana\">");
-    openList.put(new Character('H'), "<ol class=\"HIRAGANA\">");
-    openList.put(new Character('k'), "<ol class=\"katakana\">");
-    openList.put(new Character('K'), "<ol class=\"KATAKANA\">");
-    openList.put(new Character('j'), "<ol class=\"HEBREW\">");
-    openList.put(new Character('1'), "<ol>");
-    closeList.put(new Character('-'), UL_CLOSE);
-    closeList.put(new Character('*'), UL_CLOSE);
-    closeList.put(new Character('#'), OL_CLOSE);
-    closeList.put(new Character('i'), OL_CLOSE);
-    closeList.put(new Character('I'), OL_CLOSE);
-    closeList.put(new Character('a'), OL_CLOSE);
-    closeList.put(new Character('A'), OL_CLOSE);
-    closeList.put(new Character('1'), OL_CLOSE);
-    closeList.put(new Character('g'), OL_CLOSE);
-    closeList.put(new Character('G'), OL_CLOSE);
-    closeList.put(new Character('h'), OL_CLOSE);
-    closeList.put(new Character('H'), OL_CLOSE);
-    closeList.put(new Character('k'), OL_CLOSE);
-    closeList.put(new Character('K'), OL_CLOSE);
-    closeList.put(new Character('j'), OL_CLOSE);
-  };
-
-  public void handleMatch(StringBuffer buffer, MatchResult result, FilterContext context) {
-    try {
-      BufferedReader reader = new BufferedReader(new StringReader(result.group(0)));
-      //System.err.println("match="+result.group(0));
-      addList(buffer, reader);
-    } catch (Exception e) {
-      log.warn("ListFilter: unable get list content", e);
+    static
+    {
+        openList.put(Character.valueOf('-'), "<ul class=\"minus\">");
+        openList.put(Character.valueOf('*'), "<ul class=\"star\">");
+        openList.put(Character.valueOf('#'), "<ol>");
+        openList.put(Character.valueOf('i'), "<ol class=\"roman\">");
+        openList.put(Character.valueOf('I'), "<ol class=\"ROMAN\">");
+        openList.put(Character.valueOf('a'), "<ol class=\"alpha\">");
+        openList.put(Character.valueOf('A'), "<ol class=\"ALPHA\">");
+        openList.put(Character.valueOf('g'), "<ol class=\"greek\">");
+        openList.put(Character.valueOf('h'), "<ol class=\"hiragana\">");
+        openList.put(Character.valueOf('H'), "<ol class=\"HIRAGANA\">");
+        openList.put(Character.valueOf('k'), "<ol class=\"katakana\">");
+        openList.put(Character.valueOf('K'), "<ol class=\"KATAKANA\">");
+        openList.put(Character.valueOf('j'), "<ol class=\"HEBREW\">");
+        openList.put(Character.valueOf('1'), "<ol>");
+        closeList.put(Character.valueOf('-'), UL_CLOSE);
+        closeList.put(Character.valueOf('*'), UL_CLOSE);
+        closeList.put(Character.valueOf('#'), OL_CLOSE);
+        closeList.put(Character.valueOf('i'), OL_CLOSE);
+        closeList.put(Character.valueOf('I'), OL_CLOSE);
+        closeList.put(Character.valueOf('a'), OL_CLOSE);
+        closeList.put(Character.valueOf('A'), OL_CLOSE);
+        closeList.put(Character.valueOf('1'), OL_CLOSE);
+        closeList.put(Character.valueOf('g'), OL_CLOSE);
+        closeList.put(Character.valueOf('G'), OL_CLOSE);
+        closeList.put(Character.valueOf('h'), OL_CLOSE);
+        closeList.put(Character.valueOf('H'), OL_CLOSE);
+        closeList.put(Character.valueOf('k'), OL_CLOSE);
+        closeList.put(Character.valueOf('K'), OL_CLOSE);
+        closeList.put(Character.valueOf('j'), OL_CLOSE);
     }
-  }
 
-  /**
-   * Adds a list to a buffer
-   *
-   * @param buffer The buffer to write to
-   * @param reader Input is read from this Reader
-   */
-  private void addList(StringBuffer buffer, BufferedReader reader) throws IOException {
-    char[] lastBullet = new char[0];
-    String line = null;
-    while ((line = reader.readLine()) != null) {
-      // no nested list handling, trim lines:
-      line = line.trim();
-      if (line.length() == 0) {
-        continue;
-      }
+    @Override
+    protected String getLocaleKey()
+    {
+        return "filter.list";
+    }
 
-      int bulletEnd = line.indexOf(' ');
-      if (bulletEnd < 1) {
-        continue;
-      }
-      if ( line.charAt(bulletEnd - 1) == '.') {
-        bulletEnd--;
-      }
-      char[] bullet = line.substring(0, bulletEnd).toCharArray();
-      // Logger.log("found bullet: ('" + new String(lastBullet) + "') '" + new String(bullet) + "'");
-      // check whether we find a new list
-      int sharedPrefixEnd;
-      for (sharedPrefixEnd = 0; ; sharedPrefixEnd++) {
-        if (bullet.length <= sharedPrefixEnd || lastBullet.length <= sharedPrefixEnd ||
-          +bullet[sharedPrefixEnd] != lastBullet[sharedPrefixEnd]) {
-          break;
-        }
-      }
+    @Override
+    protected boolean isSingleLine()
+    {
+        return false;
+    }
 
-      for (int i = sharedPrefixEnd; i < lastBullet.length; i++) {
-        //Logger.log("closing " + lastBullet[i]);
-        buffer.append(LI_CLOSE + NEWLINE);
-        buffer.append(closeList.get(new Character(lastBullet[i]))).append("\n");
-      }
-
-      for (int i = sharedPrefixEnd; i < bullet.length; i++) {
-        //Logger.log("opening " + bullet[i]);
-        if(i > 0)
+    @Override
+    public void handleMatch(final StringBuffer buffer, final MatchResult result,
+        final FilterContext context)
+    {
+        try
         {
-          buffer.append(NEWLINE);
+            final BufferedReader reader = new BufferedReader(new StringReader(result.group(0)));
+            addList(buffer, reader);
         }
-        buffer.append(openList.get(new Character(bullet[i]))).append("\n");
-        buffer.append(LI_OPEN);
-      }
-
-      if(lastBullet.length >= bullet.length)
-      {
-        buffer.append(LI_CLOSE + NEWLINE);
-        buffer.append(LI_OPEN);
-      }
-
-      buffer.append(line.substring(line.indexOf(' ') + 1));
-      lastBullet = bullet;
+        catch(final Exception e)
+        {
+            LOG.warn("ListFilter: unable get list content", e);
+        }
     }
 
-    for (int i = lastBullet.length - 1; i >= 0; i--) {
-      //Logger.log("closing " + lastBullet[i]);
-      buffer.append(LI_CLOSE + NEWLINE);
-      buffer.append(closeList.get(new Character(lastBullet[i])));
-      if(i > 0)
-      {
-          buffer.append(NEWLINE);
-      }
+    /**
+     * Adds a list to a buffer
+     *
+     * @param buffer The buffer to write to
+     * @param reader Input is read from this Reader
+     */
+    private void addList(final StringBuffer buffer, final BufferedReader reader)
+        throws IOException
+    {
+        char[] lastBullet = new char[0];
+        String line = null;
+        while((line = reader.readLine()) != null)
+        {
+            // no nested list handling, trim lines:
+            line = line.trim();
+            if(line.length() == 0)
+            {
+                continue;
+            }
+
+            int bulletEnd = line.indexOf(' ');
+            if(bulletEnd < 1)
+            {
+                continue;
+            }
+            if(line.charAt(bulletEnd - 1) == '.')
+            {
+                bulletEnd--;
+            }
+            final char[] bullet = line.substring(0, bulletEnd).toCharArray();
+            // check whether we find a new list
+            int sharedPrefixEnd;
+            for(sharedPrefixEnd = 0;; sharedPrefixEnd++)
+            {
+                if(bullet.length <= sharedPrefixEnd ||
+                    lastBullet.length <= sharedPrefixEnd ||
+                    +bullet[sharedPrefixEnd] != lastBullet[sharedPrefixEnd])
+                {
+                    break;
+                }
+            }
+
+            for(int i = sharedPrefixEnd; i < lastBullet.length; i++)
+            {
+                buffer.append(LI_CLOSE + NEWLINE);
+                buffer.append(closeList.get(Character.valueOf(lastBullet[i])))
+                    .append("\n");
+            }
+
+            for(int i = sharedPrefixEnd; i < bullet.length; i++)
+            {
+                if(i > 0)
+                {
+                    buffer.append(NEWLINE);
+                }
+                buffer.append(openList.get(Character.valueOf(bullet[i])))
+                    .append("\n");
+                buffer.append(LI_OPEN);
+            }
+
+            if(lastBullet.length >= bullet.length)
+            {
+                buffer.append(LI_CLOSE + NEWLINE);
+                buffer.append(LI_OPEN);
+            }
+
+            buffer.append(line.substring(line.indexOf(' ') + 1));
+            lastBullet = bullet;
+        }
+
+        for(int i = lastBullet.length - 1; i >= 0; i--)
+        {
+            buffer.append(LI_CLOSE + NEWLINE);
+            buffer.append(closeList.get(Character.valueOf(lastBullet[i])));
+            if(i > 0)
+            {
+                buffer.append(NEWLINE);
+            }
+        }
     }
-  }
+
 }

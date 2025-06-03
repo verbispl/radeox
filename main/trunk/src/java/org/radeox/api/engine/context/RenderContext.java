@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,68 +16,52 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.api.engine.context;
+
+import java.util.Locale;
+import java.util.function.Function;
 
 import org.radeox.api.engine.RenderEngine;
 
-import java.util.Map;
-
-
 /**
- * RenderContext stores basic data for the context
- * the RenderEngine is called in. RenderContext
- * can be used by the Engine in whatever way it likes to.
- * The Radeox RenderEngine uses RenderContext to
- * construct FilterContext.
+ * RenderContext stores basic data for the context the RenderEngine is called in.
+ * <p>
+ *   RenderContext can be used by the Engine in whatever way it likes to. The
+ *   Radeox RenderEngine uses RenderContext to construct FilterContext.
+ * </p>
  *
  * @author Stephan J. Schmidt
  * @version $Id: RenderContext.java,v 1.2 2004/01/30 08:42:56 stephan Exp $
  */
+public interface RenderContext
+{
+    /**
+     * Returns the RenderEngine handling this request.
+     *
+     * @return engine RenderEngine handling the request within this context
+     */
+    RenderEngine getRenderEngine();
 
-public interface RenderContext {
-  public final static String INPUT_BUNDLE_NAME = "RenderContext.input_bundle_name";
-  public final static String OUTPUT_BUNDLE_NAME = "RenderContext.output_bundle_name";
-  public final static String LANGUAGE_BUNDLE_NAME = "RenderContext.language_bundle_name";
-  public final static String LANGUAGE_LOCALE = "RenderContext.language_locale";
-  public final static String INPUT_LOCALE = "RenderContext.input_locale";
-  public final static String OUTPUT_LOCALE = "RenderContext.output_locale";
-  public final static String DEFAULT_FORMATTER = "RenderContext.default_formatter";
+    /**
+     * Stores the current RenderEngine of the request.
+     *
+     * @param engine Current RenderEnginge
+     */
+    void setRenderEngine(RenderEngine engine);
 
-  /**
-   * Returns the RenderEngine handling this request.
-   *
-   * @return engine RenderEngine handling the request within this context
-   */
-  public RenderEngine getRenderEngine();
+    Object get(String key);
 
-  /**
-   * Stores the current RenderEngine of the request
-   *
-   * @param engine Current RenderEnginge
-   */
-  public void setRenderEngine(RenderEngine engine);
+    Object computeIfAbsent(String key, Function<String, ?> mappingFunction);
 
-  public Object get(String key);
+    void set(String key, Object value);
 
-  public void set(String key, Object value);
+    void setCacheable(boolean cacheable);
 
-  public Map getParameters();
+    void commitCache();
 
-  /**
-   * Set the parameters for this execution context. These
-   * parameters are read when encountering a variable in
-   * macros like {search:$query} or by ParamFilter in {$query}.
-   * Query is then read from
-   * the parameter map before given to the macro
-   *
-   * @param parameters Map of parameters with name,value pairs
-   */
-  public void setParameters(Map parameters);
+    boolean isCacheable();
 
-  public void setCacheable(boolean cacheable);
+    Locale getLocale();
 
-  public void commitCache();
-
-  public boolean isCacheable();
+    void setLocale(Locale locale);
 }

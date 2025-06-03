@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,46 +16,112 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.engine.context;
 
-import org.radeox.api.engine.context.InitialRenderContext;
-import org.radeox.api.engine.context.RenderContext;
-import org.radeox.util.i18n.ResourceManager;
-import org.radeox.filter.FilterPipe;
-
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.radeox.api.engine.context.InitialRenderContext;
+import org.radeox.filter.FilterPipe;
+import org.radeox.util.i18n.BaseResourceBundle;
+import org.radeox.util.i18n.ResourceManager;
 
 /**
- * Base impementation for InitialRenderContext
+ * Base impementation for InitialRenderContext.
  *
  * @author Stephan J. Schmidt
+ * @author <a href="mailto:marcin.golebski@verbis.pl">Marcin Golebski</a>
  * @version $Id: BaseInitialRenderContext.java,v 1.6 2004/04/27 19:30:38 leo Exp $
  */
+public class BaseInitialRenderContext extends BaseRenderContext implements InitialRenderContext
+{
+    private final ConcurrentHashMap<Locale, ResourceManager> resourceManagers;
 
-public class BaseInitialRenderContext extends BaseRenderContext implements InitialRenderContext {
+    private final String languageBuldleName;
+    private final Locale inputLocale;
+    private final Locale outputLocale;
+    private final String inputBundleName;
+    private final String outputBundleName;
 
-  public BaseInitialRenderContext() {
-    Locale locale = new Locale("Basic", "basic");
-    set(RenderContext.INPUT_LOCALE, locale);
-    set(RenderContext.OUTPUT_LOCALE, locale);
-    set(RenderContext.INPUT_BUNDLE_NAME, "radeox_markup");
-    set(RenderContext.OUTPUT_BUNDLE_NAME, "radeox_markup");
-    set(RenderContext.LANGUAGE_BUNDLE_NAME, "radeox_messages");
+    private FilterPipe fp;
 
-    Locale languageLocale = Locale.getDefault();
-    set(RenderContext.LANGUAGE_LOCALE, languageLocale);
-    ResourceManager.get().setLocale(languageLocale, null);
+    BaseInitialRenderContext(final String languageBuldleName,
+        final Locale inputLocale, final Locale outputLocale,
+        final String inputBundleName, final String outputBundleName)
+    {
+        this.resourceManagers = new ConcurrentHashMap<>();
+        this.languageBuldleName = languageBuldleName;
+        this.inputLocale = inputLocale;
+        this.outputLocale = outputLocale;
+        this.inputBundleName = inputBundleName;
+        this.outputBundleName = outputBundleName;
+    }
 
-    set(RenderContext.DEFAULT_FORMATTER, "java");
-  }
+    @Override
+    public void setFilterPipe(final FilterPipe fp)
+    {
+        this.fp = fp;
+    }
 
-  public void setFilterPipe(FilterPipe fp) {
-    set(InitialRenderContext.FILTER_PIPE, fp);
-  }
+    @Override
+    public FilterPipe getFilterPipe()
+    {
+        return fp;
+    }
 
-  public FilterPipe getFilterPipe() {
-    return (FilterPipe) get(InitialRenderContext.FILTER_PIPE);
-  }
+    @Override
+    public String getLanguageBuldleName()
+    {
+        return languageBuldleName;
+    }
+
+    @Override
+    public Locale getInputLocale()
+    {
+        return inputLocale;
+    }
+
+    @Override
+    public Locale getOutputLocale()
+    {
+        return outputLocale;
+    }
+
+    @Override
+    public String getInputBundleName()
+    {
+        return inputBundleName;
+    }
+
+    @Override
+    public String getOutputBundleName()
+    {
+        return outputBundleName;
+    }
+
+    /**
+     * Get a new thread-local instance of the ResourceManager If you are having
+     * problems with bundles beeing the same for different threads and locales,
+     * try forceGet()
+     *
+     * @return the thread-local ResourceManager
+     */
+    private ResourceManager get(final Locale locale)
+    {
+        return resourceManagers.computeIfAbsent(locale, ResourceManager::new);
+    }
+
+    /**
+     * Get ResourceBundle using the base name provided. The bundle is located
+     * using previously given locale settings.
+     *
+     * @param baseName the bundle base name
+     * @return the bundle
+     */
+    @Override
+    public BaseResourceBundle getBundle(final Locale locale, final String baseName)
+    {
+        return get(locale).getResourceBundle(baseName);
+    }
 
 }

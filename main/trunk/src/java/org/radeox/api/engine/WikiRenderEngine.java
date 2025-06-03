@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,7 +16,6 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.api.engine;
 
 /**
@@ -25,22 +24,22 @@ package org.radeox.api.engine;
  * @author Stephan J. Schmidt
  * @version $Id: WikiRenderEngine.java,v 1.1 2003/10/07 08:20:24 stephan Exp $
  */
+public interface WikiRenderEngine
+{
+    /**
+     * Test for the existence of a wiki page.
+     *
+     * @param name Name of an Wiki Page
+     * @return result True if wiki page exists
+     */
+    public boolean exists(String name);
 
-public interface WikiRenderEngine {
-  /**
-   * Test for the existence of a wiki page
-   *
-   * @param name Name of an Wiki Page
-   * @return result True if wiki page exists
-   */
+    public boolean showCreate();
 
-  public boolean exists(String name);
+    public void appendLink(StringBuffer buffer, String name, String view, String anchor);
 
-  public boolean showCreate();
+    public void appendLink(StringBuffer buffer, String name, String view);
 
-  public void appendLink(StringBuffer buffer, String name, String view, String anchor);
+    public void appendCreateLink(StringBuffer buffer, String name, String view);
 
-  public void appendLink(StringBuffer buffer, String name, String view);
-
-  public void appendCreateLink(StringBuffer buffer, String name, String view);
 }

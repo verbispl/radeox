@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -18,34 +18,38 @@
 
 package org.radeox.example;
 
-import groovy.text.SimpleTemplateEngine;
-import groovy.text.Template;
-import groovy.text.TemplateEngine;
-import org.codehaus.groovy.syntax.SyntaxException;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.radeox.api.engine.RenderEngine;
 import org.radeox.api.engine.context.RenderContext;
 import org.radeox.engine.BaseRenderEngine;
 import org.radeox.engine.context.BaseRenderContext;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-
+import groovy.text.SimpleTemplateEngine;
+import groovy.text.Template;
+import groovy.text.TemplateEngine;
 
 /**
- * Groovy Template Engine which uses Radeox to render text markup
+ * Groovy Template Engine which uses Radeox to render text markup.
  *
  * @author Stephan J. Schmidt
  * @version $Id: RadeoxTemplateEngine.java,v 1.1 2004/04/14 13:03:49 stephan Exp $
  */
+public class RadeoxTemplateEngine extends TemplateEngine
+{
+    @Override
+    public Template createTemplate(final Reader reader)
+        throws CompilationFailedException, ClassNotFoundException, IOException
+    {
+        final RenderContext context = new BaseRenderContext();
+        final RenderEngine engine = new BaseRenderEngine();
+        final String renderedText = engine.render(reader, context);
 
-public class RadeoxTemplateEngine extends TemplateEngine {
-   public Template createTemplate(Reader reader) throws SyntaxException, ClassNotFoundException, IOException {
-       RenderContext context = new BaseRenderContext();
-       RenderEngine engine = new BaseRenderEngine();
-       String renderedText = engine.render(reader , context);
+        final TemplateEngine templateEngine = new SimpleTemplateEngine();
+        return templateEngine.createTemplate(new StringReader(renderedText));
+    }
 
-       TemplateEngine templateEngine = new SimpleTemplateEngine();
-       return templateEngine.createTemplate(new StringReader(renderedText));
-   }
 }

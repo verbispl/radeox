@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,25 +16,27 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.macro.code;
 
-/*
+/**
  * Default code formatter
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: DefaultRegexCodeFormatter.java,v 1.1 2003/08/29 12:32:55 stephan Exp $
  */
-
 import org.radeox.filter.regex.RegexReplaceFilter;
 
-public class DefaultRegexCodeFormatter extends RegexReplaceFilter {
-  public DefaultRegexCodeFormatter(String regex, String substitute) {
-    super(regex, substitute);
-  }
+public class DefaultRegexCodeFormatter extends RegexReplaceFilter
+{
+    public DefaultRegexCodeFormatter(final String regex, final String substitute)
+    {
+        super(regex, substitute);
+    }
 
-  public int getPriority() {
-    return 0;
-  }
+    public int getPriority()
+    {
+        return 0;
+    }
+
 }

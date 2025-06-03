@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,33 +16,35 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.macro.code;
 
 import org.radeox.filter.context.FilterContext;
 
-/*
+/**
  * Dummy filter that does nothing
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: NullCodeFilter.java,v 1.4 2003/08/29 12:32:12 stephan Exp $
  */
+public class NullCodeFilter implements SourceCodeFormatter
+{
+    @Override
+    public String filter(final String content, final FilterContext context)
+    {
+        return content;
+    }
 
-public class NullCodeFilter implements SourceCodeFormatter {
+    @Override
+    public String getName()
+    {
+        return "none";
+    }
 
-  public NullCodeFilter() {
-  }
+    @Override
+    public int getPriority()
+    {
+        return 0;
+    }
 
-  public String filter(String content, FilterContext context) {
-    return content;
-  }
-
-  public String getName() {
-    return "none";
-  }
-
-  public int getPriority() {
-    return 0;
-  }
 }

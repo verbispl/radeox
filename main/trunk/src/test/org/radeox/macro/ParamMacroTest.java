@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -18,27 +18,21 @@
 
 package org.radeox.macro;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.radeox.filter.context.ParamContext;
 
-import java.util.HashMap;
-import java.util.Map;
+public class ParamMacroTest extends MacroTestSupport
+{
+    public ParamMacroTest(final String name)
+    {
+        super(name);
+    }
 
-public class ParamMacroTest extends MacroTestSupport {
+    public void testParamMacro()
+    {
+        final ParamContext params = ParamContext.getOrCreate(context);
+        params.put("user", "stephan");
+        final String result = engine.render("{hello:$user}", context);
+        assertEquals("Hello <b>stephan</b>", result);
+    }
 
-  public ParamMacroTest(String name) {
-    super(name);
-  }
-
-  public static Test suite() {
-    return new TestSuite(ParamMacroTest.class);
-  }
-
-  public void testParamMacro() {
-    Map params = new HashMap();
-    params.put("user","stephan");
-    context.setParameters(params);
-    String result = engine.render("{hello:$user}", context);
-    assertEquals("Hello <b>stephan</b>", result);
-  }
 }

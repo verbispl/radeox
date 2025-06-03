@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,69 +16,112 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.engine.context;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
 
 import org.radeox.api.engine.RenderEngine;
 import org.radeox.api.engine.context.RenderContext;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
 /**
- * Base impementation for RenderContext
+ * Base impementation for RenderContext.
  *
  * @author Stephan J. Schmidt
+ * @author <a href="mailto:marcin.golebski@verbis.pl">Marcin Golebski</a>
  * @version $Id: BaseRenderContext.java,v 1.8 2003/10/07 08:20:24 stephan Exp $
  */
+public class BaseRenderContext implements RenderContext
+{
+    private Locale locale;
 
-public class BaseRenderContext implements RenderContext {
-  private boolean cacheable = true;
-  private boolean tempCacheable = false;;
+    private boolean cacheable = true;
+    private boolean tempCacheable = false;
 
-  private RenderEngine engine;
-  private Map params;
-  private Map values;
+    private RenderEngine engine;
+    private final Map<String, Object> values;
 
-  public BaseRenderContext() {
-    values = new HashMap();
-  }
+    /**
+     * Single render context constructor with default locale.
+     *
+     * @see Locale#getDefault()
+     */
+    public BaseRenderContext()
+    {
+        this(Locale.getDefault());
+    }
 
-  public Object get(String key) {
-    return values.get(key);
-  }
+    /**
+     * Single render context constructor.
+     *
+     * @param locale render locale
+     */
+    public BaseRenderContext(final Locale locale)
+    {
+        this.locale = locale;
+        this.values = new HashMap<>();
+    }
 
-  public void set(String key, Object value) {
-    values.put(key, value);
-  }
+    @Override
+    public Locale getLocale()
+    {
+        return locale;
+    }
 
-  public Map getParameters() {
-    return params;
-  }
+    public void setLocale(final Locale locale)
+    {
+        this.locale = locale;
+    }
 
-  public void setParameters(Map parameters) {
-    this.params = parameters;
-  }
+    @Override
+    public Object get(final String key)
+    {
+        return values.get(key);
+    }
 
-  public RenderEngine getRenderEngine() {
-    return engine;
-  }
+    @Override
+    public Object computeIfAbsent(final String key, final Function<String, ?> mappingFunction)
+    {
+        return values.computeIfAbsent(key, mappingFunction);
+    }
 
-  public void setRenderEngine(RenderEngine engine) {
-    this.engine = engine;
-  }
+    @Override
+    public void set(final String key, final Object value)
+    {
+        values.put(key, value);
+    }
 
-  public void setCacheable(boolean cacheable) {
-    tempCacheable = cacheable;
-  }
+    @Override
+    public RenderEngine getRenderEngine()
+    {
+        return engine;
+    }
 
-  public void commitCache() {
-    cacheable = cacheable && tempCacheable;
-    tempCacheable = false;
-  }
+    @Override
+    public void setRenderEngine(final RenderEngine engine)
+    {
+        this.engine = engine;
+    }
 
-  public boolean isCacheable() {
-    return cacheable;
-  }
+    @Override
+    public void setCacheable(final boolean cacheable)
+    {
+        tempCacheable = cacheable;
+    }
+
+    @Override
+    public void commitCache()
+    {
+        cacheable = cacheable && tempCacheable;
+        tempCacheable = false;
+    }
+
+    @Override
+    public boolean isCacheable()
+    {
+        return cacheable;
+    }
+
 }

@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,60 +16,38 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.macro;
 
-import org.radeox.api.engine.context.InitialRenderContext;
-import org.radeox.api.engine.context.RenderContext;
-import org.radeox.util.i18n.ResourceManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.Locale;
-import java.util.ResourceBundle;
 
-/*
- * Class that implements base functionality to write macros
- * and reads it's name from a locale file
+import org.radeox.api.engine.context.InitialRenderContext;
+import org.radeox.util.i18n.BaseResourceBundle;
+
+/**
+ * Class that implements base functionality to write macros and reads it's name
+ * from a locale file
  *
  * @author stephan
  * @version $Id: BaseLocaleMacro.java,v 1.6 2004/04/27 19:30:38 leo Exp $
  */
+public abstract class BaseLocaleMacro extends BaseMacro implements LocaleMacro
+{
+    private String name;
 
-public abstract class BaseLocaleMacro extends BaseMacro implements LocaleMacro {
-  private static Log log = LogFactory.getLog(BaseLocaleMacro.class);
-
-  private String name;
-
-  public String getName() {
-    return name;
-  }
-
-  public String getDescription() {
-    try {
-      return ResourceManager.getBundle((String)initialContext.get(RenderContext.LANGUAGE_BUNDLE_NAME))
-            .getString(getLocaleKey()+".description");
-    } catch (Exception e) {
-      log.warn("missing macro description for "+getLocaleKey());
-      return super.getDescription();
+    @Override
+    public String getName()
+    {
+        return name;
     }
-  }
 
-  public String[] getParamDescription() {
-    try {
-      return ResourceManager.getBundle((String) initialContext.get(RenderContext.LANGUAGE_BUNDLE_NAME))
-            .getString(getLocaleKey() + ".params").split(";");
-    } catch (Exception e) {
-      return super.getParamDescription();
+    @Override
+    public void setInitialContext(final InitialRenderContext context)
+    {
+        super.setInitialContext(context);
+        final Locale inputLocale = context.getInputLocale();
+        final String inputName = context.getInputBundleName();
+        final BaseResourceBundle inputMessages = context.getBundle(inputLocale, inputName);
+        name = inputMessages.getString(getLocaleKey() + ".name");
     }
-  }
 
-  public void setInitialContext(InitialRenderContext context) {
-    super.setInitialContext(context);
-    Locale inputLocale = (Locale) context.get(RenderContext.INPUT_LOCALE);
-    String inputName = (String) context.get(RenderContext.INPUT_BUNDLE_NAME);
-    ResourceBundle inputMessages = ResourceBundle.getBundle(inputName, inputLocale);
-
-    name = inputMessages.getString(getLocaleKey()+".name");
-  }
 }

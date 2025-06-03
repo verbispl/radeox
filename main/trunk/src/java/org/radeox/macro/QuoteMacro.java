@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,66 +16,77 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.macro;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Locale;
+import java.util.MissingResourceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.radeox.macro.parameter.MacroParameter;
-import org.radeox.util.i18n.ResourceManager;
-import org.radeox.api.engine.context.RenderContext;
+import org.radeox.util.i18n.BaseResourceBundle;
 
-import java.io.IOException;
-import java.io.Writer;
-
-/*
- * Macro to display quotations from other sources. The
- * output is wrapped usually in <blockquote> to look like
- * a quotation.
+/**
+ * Macro to display quotations from other sources.
+ * <p>
+ *   The output is wrapped usually in <blockquote> to look like a quotation.
+ * </p>
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: QuoteMacro.java,v 1.11 2004/06/08 07:54:36 leo Exp $
  */
+public class QuoteMacro extends Preserved
+{
+    private static final Log LOG = LogFactory.getLog(QuoteMacro.class);
 
-public class QuoteMacro extends LocalePreserved {
-  private static Log log = LogFactory.getLog(QuoteMacro.class);
-
-  public String getLocaleKey() {
-    return "macro.quote";
-  }
-
-  public void execute(Writer writer, MacroParameter params)
-    throws IllegalArgumentException, IOException {
-
-    writer.write("<blockquote class=\"quote\">");
-    writer.write(params.getContent());
-    String sourceDesc;
-    try {
-      sourceDesc = ResourceManager.getString((String) initialContext.get(RenderContext.LANGUAGE_BUNDLE_NAME),
-                                         getLocaleKey() + ".source");
-    } catch (Exception e) {
-      log.warn("missing value for " + getLocaleKey() + ".source");
-      sourceDesc = "Source";
+    @Override
+    public String getLocaleKey()
+    {
+        return "macro.quote";
     }
 
-    if (params.getLength() > 0) {
-      String source = params.get(0);
-      boolean isLink = source.toLowerCase().startsWith("http://");  
-        
-      if (params.getLength() == 2) {
-        sourceDesc = params.get(1);
-      }
-        
-      if (isLink) {
-        writer.write("<br><a href=\""+source+"\">");
-        writer.write(sourceDesc);
-        writer.write("</a>");
-      } else {
-        writer.write("<br><b>"+source+"</b>");
-      }
+    @Override
+    public void execute(final Writer writer, final MacroParameter params)
+    throws IllegalArgumentException, IOException
+    {
+        final Locale locale = params.getContext().getLocale();
+        writer.write("<blockquote class=\"quote\">");
+        writer.write(params.getContent());
+        String sourceDesc;
+        try
+        {
+            final String baseName = initialContext.getLanguageBuldleName();
+            final BaseResourceBundle bundle = initialContext.getBundle(locale, baseName);
+            sourceDesc = bundle.get(getLocaleKey() + ".source");
+        }
+        catch(final MissingResourceException e)
+        {
+            LOG.warn("missing value for " + getLocaleKey() + ".source");
+            sourceDesc = "Source";
+        }
+        if(params.getLength() > 0)
+        {
+            final String source = params.get(0);
+            final boolean isLink = source.toLowerCase().startsWith("http://");
+            if(params.getLength() == 2)
+            {
+                sourceDesc = params.get(1);
+            }
+            if(isLink)
+            {
+                writer.write("<br><a href=\"" + source + "\">");
+                writer.write(sourceDesc);
+                writer.write("</a>");
+            }
+            else
+            {
+                writer.write("<br><b>" + source + "</b>");
+            }
+        }
+        writer.write("</blockquote>");
     }
-    writer.write("</blockquote>");
-    return;
-  }
+
 }

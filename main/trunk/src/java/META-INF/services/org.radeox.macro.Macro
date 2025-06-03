@@ -15,3 +15,4 @@ org.radeox.macro.RfcMacro
 org.radeox.macro.TableMacro
 org.radeox.macro.InterWikiMacro
 org.radeox.macro.XrefMacro
+org.radeox.macro.ImgMacro

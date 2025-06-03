@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,16 +16,14 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.filter.regex;
 
-import org.radeox.api.engine.context.InitialRenderContext;
-import org.radeox.api.engine.context.RenderContext;
-
 import java.util.Locale;
-import java.util.ResourceBundle;
 
-/*
+import org.radeox.api.engine.context.InitialRenderContext;
+import org.radeox.util.i18n.BaseResourceBundle;
+
+/**
  * Filter that extends RegexTokenFilter but reads regular expressions from
  * a locale
  *
@@ -33,45 +31,55 @@ import java.util.ResourceBundle;
  * @team sonicteam
  * @version $Id: LocaleRegexTokenFilter.java,v 1.5 2003/10/07 08:20:24 stephan Exp $
  */
+public abstract class LocaleRegexTokenFilter extends RegexTokenFilter
+{
+    protected BaseResourceBundle inputMessages;
+    protected BaseResourceBundle outputMessages;
+    private String modifier;
 
-public abstract class LocaleRegexTokenFilter extends RegexTokenFilter {
-  protected ResourceBundle inputMessages;
-  protected ResourceBundle outputMessages;
-  private String modifier;
+    public void setModifier(final String modifier)
+    {
+        this.modifier = modifier;
+    }
 
-  public void setModifier(String modifier) {
-    this.modifier = modifier;
-  }
+    public String getModifier()
+    {
+        return modifier;
+    }
 
-  public String getModifier() {
-    return modifier;
-  }
+    protected boolean isSingleLine()
+    {
+        return false;
+    }
 
-  protected boolean isSingleLine() {
-    return false;
-  }
+    protected BaseResourceBundle getInputBundle()
+    {
+        final Locale inputLocale = initialContext.getInputLocale();
+        final String inputName = initialContext.getInputBundleName();
+        return initialContext.getBundle(inputLocale, inputName);
+    }
 
-  protected ResourceBundle getInputBundle() {
-    Locale inputLocale = (Locale) initialContext.get(RenderContext.INPUT_LOCALE);
-    String inputName = (String) initialContext.get(RenderContext.INPUT_BUNDLE_NAME);
-    return ResourceBundle.getBundle(inputName, inputLocale);
-  }
+    protected BaseResourceBundle getOutputBundle()
+    {
+        final Locale outputLocale = initialContext.getOutputLocale();
+        final String outputName = initialContext.getOutputBundleName();
+        return initialContext.getBundle(outputLocale, outputName);
+    }
 
-  protected ResourceBundle getOutputBundle() {
-    Locale outputLocale = (Locale) initialContext.get(RenderContext.OUTPUT_LOCALE);
-    String outputName = (String) initialContext.get(RenderContext.OUTPUT_BUNDLE_NAME);
-    return ResourceBundle.getBundle(outputName, outputLocale);
-  }
+    @Override
+    public void setInitialContext(final InitialRenderContext context)
+    {
+        super.setInitialContext(context);
+        clearRegex();
 
-  public void setInitialContext(InitialRenderContext context) {
-    super.setInitialContext(context);
-    clearRegex();
+        outputMessages = getOutputBundle();
+        inputMessages = getInputBundle();
+        final String match = inputMessages.getString(getLocaleKey() +
+            (modifier != null ? "." + modifier : "") + ".match");
+        addRegex(match, "", isSingleLine() ? RegexReplaceFilter.SINGLELINE
+            : RegexReplaceFilter.MULTILINE);
+    }
 
-    outputMessages = getOutputBundle();
-    inputMessages = getInputBundle();
-    String match = inputMessages.getString(getLocaleKey() + (modifier != null ? "." + modifier : "") + ".match");
-    addRegex(match, "", isSingleLine() ? RegexReplaceFilter.SINGLELINE : RegexReplaceFilter.MULTILINE);
-  }
+    protected abstract String getLocaleKey();
 
-  protected abstract String getLocaleKey();
 }

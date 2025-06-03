@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -18,47 +18,34 @@
 
 package org.radeox.filter;
 
-import org.radeox.filter.context.FilterContext;
-import org.radeox.filter.regex.LocaleRegexTokenFilter;
-import org.radeox.regex.MatchResult;
+import org.radeox.filter.context.ParamContext;
 
-import java.util.Map;
-
-/*
+/**
  * ParamFilter replaces parametes from from the MacroFilter in the input.
- * These parameters could be read from an HTTP request and put in
- * MacroFilter.
- * A parameter is replaced in {$paramName}
+ * <p>
+ *   These parameters could be read from an HTTP request and put in MacroFilter.
+ *   A parameter is replaced in {$paramName}.
+ * </p>
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: ParamFilter.java,v 1.7 2004/04/15 13:56:14 stephan Exp $
+ * @see ParamContext
  */
-
-public class ParamFilter extends LocaleRegexTokenFilter {
-  public void handleMatch(StringBuffer buffer, MatchResult result, FilterContext context) {
-    Map param = context.getRenderContext().getParameters();
-
-    String name = result.group(1);
-    if (param.containsKey(name)) {
-      Object value = param.get(name);
-      if (value instanceof String[]) {
-        buffer.append(((String[]) value)[0]);
-      } else {
-        buffer.append(value);
-      }
-    } else {
-      buffer.append("<");
-      buffer.append(name);
-      buffer.append(">");
+public class ParamFilter extends AbstractParamFilter
+{
+    @Override
+    protected String getLocaleKey()
+    {
+        return "filter.param";
     }
-  }
 
-  protected String getLocaleKey() {
-    return "filter.param";
-  }
+    @Override
+    void appendEmptyValue(final StringBuffer buffer, final String name)
+    {
+        buffer.append("{$");
+        buffer.append(name);
+        buffer.append("}");
+    }
 
-  protected boolean isSingleLine() {
-    return true;
-  }
 }

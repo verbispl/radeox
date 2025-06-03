@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,38 +16,45 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.macro;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Plugin loader for macros
+ * Plugin loader for macros.
  *
  * @author Stephan J. Schmidt
  * @version $Id: MacroLoader.java,v 1.5 2004/05/03 11:12:37 stephan Exp $
  */
+public class MacroLoader extends PluginLoader<Macro>
+{
+    private static final Log LOG = LogFactory.getLog(MacroLoader.class);
 
-public class MacroLoader extends PluginLoader {
-  private static Log log = LogFactory.getLog(MacroLoader.class);
-
-  public Class getLoadClass() {
-    return Macro.class;
-  }
-
-  /**
-   *  Add a plugin to the known plugin map
-   *
-   * @param repository a Repository to add the plugin to
-   * @param plugin a Macro to add to the repository
-   */
-  public void add(Repository repository, Object plugin) {
-    if (plugin instanceof Macro) {
-      repository.put(((Macro) plugin).getName(), plugin);
-    } else {
-      log.debug("MacroLoader: " + plugin.getClass() + " not of Type " + getLoadClass());
+    @Override
+    public Class<Macro> getLoadClass()
+    {
+        return Macro.class;
     }
-  }
+
+    /**
+     * Add a plugin to the known plugin map.
+     *
+     * @param repository a Repository to add the plugin to
+     * @param plugin a Macro to add to the repository
+     */
+    @Override
+    public <R extends Macro> void add(final Repository<Macro> repository, final R plugin)
+    {
+        if(plugin instanceof Macro)
+        {
+            repository.put(plugin.getName(), plugin);
+        }
+        else
+        {
+            LOG.debug("MacroLoader: " + plugin.getClass() + " not of Type " +
+                getLoadClass());
+        }
+    }
 
 }

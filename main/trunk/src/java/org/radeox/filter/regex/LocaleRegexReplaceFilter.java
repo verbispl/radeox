@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,67 +16,81 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.filter.regex;
 
-import org.radeox.api.engine.context.InitialRenderContext;
-import org.radeox.api.engine.context.RenderContext;
-
 import java.util.Locale;
-import java.util.ResourceBundle;
 
-/*
- * Class that extends RegexReplaceFilter but reads patterns from
- * a locale file instead of hardwired regex
+import org.radeox.api.engine.context.InitialRenderContext;
+import org.radeox.util.i18n.BaseResourceBundle;
+
+/**
+ * Class that extends RegexReplaceFilter but reads patterns from a locale file
+ * instead of hardwired regex.
  *
  * @author stephan
  * @team sonicteam
  * @version $Id: LocaleRegexReplaceFilter.java,v 1.6 2003/10/07 08:20:24 stephan Exp $
  */
+public abstract class LocaleRegexReplaceFilter extends RegexReplaceFilter
+{
+    private String modifier = null;
 
-public abstract class LocaleRegexReplaceFilter extends RegexReplaceFilter {
-  private String modifier = null;
+    protected abstract String getLocaleKey();
 
-  protected abstract String getLocaleKey();
+    public void setModifier(final String modifier)
+    {
+        this.modifier = modifier;
+    }
 
-  public void setModifier(String modifier) {
-    this.modifier = modifier;
-  }
+    public String getModifier()
+    {
+        return modifier;
+    }
 
-  public String getModifier() {
-    return modifier;
-  }
+    protected boolean isSingleLine()
+    {
+        return false;
+    }
 
-  protected boolean isSingleLine() {
-    return false;
-  }
+    protected BaseResourceBundle getInputBundle()
+    {
+        final Locale inputLocale = initialContext.getInputLocale();
+        final String inputName = initialContext.getInputBundleName();
+        return initialContext.getBundle(inputLocale, inputName);
+    }
 
-  protected ResourceBundle getInputBundle() {
-    Locale inputLocale = (Locale) initialContext.get(RenderContext.INPUT_LOCALE);
-    String inputName = (String) initialContext.get(RenderContext.INPUT_BUNDLE_NAME);
-    return ResourceBundle.getBundle(inputName, inputLocale);
-  }
+    protected BaseResourceBundle getOutputBundle()
+    {
+        final String outputName = initialContext.getOutputBundleName();
+        final Locale outputLocale = initialContext.getOutputLocale();
+        return initialContext.getBundle(outputLocale, outputName);
+    }
 
-  protected ResourceBundle getOutputBundle() {
-    String outputName = (String) initialContext.get(RenderContext.OUTPUT_BUNDLE_NAME);
-    Locale outputLocale = (Locale) initialContext.get(RenderContext.OUTPUT_LOCALE);
-    return ResourceBundle.getBundle(outputName, outputLocale);
-  }
+    @Override
+    public void setInitialContext(final InitialRenderContext context)
+    {
+        super.setInitialContext(context);
+        clearRegex();
 
-  public void setInitialContext(InitialRenderContext context) {
-    super.setInitialContext(context);
-    clearRegex();
+        final BaseResourceBundle outputMessages = getOutputBundle();
+        final BaseResourceBundle inputMessages = getInputBundle();
 
-    ResourceBundle outputMessages = getOutputBundle();
-    ResourceBundle inputMessages = getInputBundle();
+        final String match;
+        final String print;
+        if(modifier != null)
+        {
+            match = inputMessages.getString(getLocaleKey() + "." + modifier + ".match");
+            print = outputMessages.getString(getLocaleKey() + "." + modifier + ".print");
+            addRegex(match, print, isSingleLine() ? RegexReplaceFilter.SINGLELINE
+                : RegexReplaceFilter.MULTILINE);
+        }
+        else
+        {
+            match = inputMessages.getString(getLocaleKey() + ".match");
+            print = outputMessages.getString(getLocaleKey() + ".print");
+        }
+        addRegex(match, print, isSingleLine() ? RegexReplaceFilter.SINGLELINE
+            : RegexReplaceFilter.MULTILINE);
+    }
 
-    String match = inputMessages.getString(getLocaleKey() + (modifier != null ? "." + modifier : "") + ".match");
-    String print = outputMessages.getString(getLocaleKey() + (modifier != null ? "." + modifier : "") + ".print");
-    //System.err.println(getLocaleKey()+": match="+match+" pattern="+print);
-    addRegex(match, print, isSingleLine() ? RegexReplaceFilter.SINGLELINE : RegexReplaceFilter.MULTILINE);
-  }
-
-  private String getKeyModifier() {
-    return modifier;
-  }
 }

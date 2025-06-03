@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,50 +16,57 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.filter;
+
+import java.text.MessageFormat;
 
 import org.radeox.api.engine.context.InitialRenderContext;
 import org.radeox.filter.context.FilterContext;
 import org.radeox.filter.regex.LocaleRegexTokenFilter;
 import org.radeox.regex.MatchResult;
 
-import java.text.MessageFormat;
-
-/*
+/**
  * Transforms header style lines into subsections. A header starts with a 1 for
  * first level headers and 1.1 for secend level headers. Headers are
- * numbered automatically
+ * numbered automatically.
  *
  * @author leo
  * @team other
  * @version $Id: HeadingFilter.java,v 1.8 2004/04/15 13:56:14 stephan Exp $
  */
+public class HeadingFilter extends LocaleRegexTokenFilter implements CacheFilter
+{
+    private MessageFormat formatter;
 
-public class HeadingFilter extends LocaleRegexTokenFilter implements CacheFilter {
-  private MessageFormat formatter;
+    @Override
+    protected String getLocaleKey()
+    {
+        return "filter.heading";
+    }
 
+    @Override
+    public void handleMatch(final StringBuffer buffer,
+        final MatchResult result, final FilterContext context)
+    {
+        buffer.append(handleMatch(result));
+    }
 
-  protected String getLocaleKey() {
-    return "filter.heading";
-  }
+    @Override
+    public void setInitialContext(final InitialRenderContext context)
+    {
+        super.setInitialContext(context);
+        final String outputTemplate = outputMessages.get(getLocaleKey() + ".print");
+        formatter = new MessageFormat("");
+        formatter.applyPattern(outputTemplate);
+    }
 
-  public void handleMatch(StringBuffer buffer, MatchResult result, FilterContext context) {
-    buffer.append(handleMatch(result, context));
-  }
+    private String handleMatch(final MatchResult result)
+    {
+        String match = result.group(1);
+        match = match.replaceAll("\\.", "");
+        match = match.replaceAll(".", "1-");
+        match = match.substring(0, match.length() - 1);
+        return formatter.format(new Object[] {match, result.group(3)});
+    }
 
-  public void setInitialContext(InitialRenderContext context) {
-    super.setInitialContext(context);
-    String outputTemplate = outputMessages.getString(getLocaleKey() + ".print");
-    formatter = new MessageFormat("");
-    formatter.applyPattern(outputTemplate);
-  }
-
-  public String handleMatch(MatchResult result, FilterContext context) {
-    String match = result.group(1);
-    match = match.replaceAll("\\.", "");
-    match = match.replaceAll(".", "1-");
-    match = match.substring(0, match.length() - 1);
-    return formatter.format(new Object[]{match, result.group(3)});
-  }
 }

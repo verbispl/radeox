@@ -1,8 +1,8 @@
 /*
- *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its 
+ *      Copyright 2001-2004 Fraunhofer Gesellschaft, Munich, Germany, for its
  *      Fraunhofer Institute Computer Architecture and Software Technology
  *      (FIRST), Berlin, Germany
- *      
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,46 +16,48 @@
  *  limitations under the License.
  */
 
-
 package org.radeox.filter;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.radeox.filter.TypographyFilter;
+public class TypographyFilterTest extends FilterTestSupport
+{
 
-public class TypographyFilterTest extends FilterTestSupport {
+    @Override
+    protected void setUp() throws Exception
+    {
+        filter = new TypographyFilter();
+        super.setUp();
+    }
 
-  protected void setUp() throws Exception {
-    filter = new TypographyFilter();
-    super.setUp();
-  }
+    public void testElipsis()
+    {
+        assertEquals("Test &#8230; Text",
+            filter.filter("Test ... Text", context));
+    }
 
-  public static Test suite() {
-    return new TestSuite(FilterTestSupport.class);
-  }
+    public void testNotAfter()
+    {
+        assertEquals("...Text", filter.filter("...Text", context));
+    }
 
-  public void testElipsis() {
-    assertEquals("Test &#8230; Text", filter.filter("Test ... Text", context));
-  }
+    public void testEndOfLine()
+    {
+        assertEquals("Text&#8230;", filter.filter("Text...", context));
+    }
 
-  public void testNotAfter() {
-    assertEquals("...Text", filter.filter("...Text", context));
-  }
+    public void test4Dots()
+    {
+        assertEquals("Test .... Text",
+            filter.filter("Test .... Text", context));
+    }
 
-  public void testEndOfLine() {
-    assertEquals("Text&#8230;", filter.filter("Text...", context));
-  }
+    public void testLineStart()
+    {
+        assertEquals("&#8230; Text", filter.filter("... Text", context));
+    }
 
-  public void test4Dots() {
-    assertEquals("Test .... Text", filter.filter("Test .... Text", context));
-  }
-
-  public void testLineStart() {
-    assertEquals("&#8230; Text", filter.filter("... Text", context));
-  }
-
-  public void testLineEnd() {
-    assertEquals("Test &#8230;", filter.filter("Test ...", context));
-  }
+    public void testLineEnd()
+    {
+        assertEquals("Test &#8230;", filter.filter("Test ...", context));
+    }
 
 }
