@@ -26,8 +26,8 @@ public class ImgMacroContext
 {
     private static final String KEY = ImgMacroContext.class.getName()+"_KEY";
 
-    private final List<ImageMacroFile> files;
-    private Map<String, ImageMacroFile> map;
+    private final List<ImgMacroFile> files;
+    private Map<String, ImgMacroFile> map;
     private int index;
 
     public ImgMacroContext()
@@ -36,13 +36,13 @@ public class ImgMacroContext
         index = 0;
     }
 
-    public void addAll(final Collection<ImageMacroFile> files)
+    public void addAll(final Collection<ImgMacroFile> files)
     {
         this.files.addAll(files);
         this.map = null;
     }
 
-    public void add(final ImageMacroFile file)
+    public void add(final ImgMacroFile file)
     {
         this.files.add(file);
         this.map = null;
@@ -59,12 +59,12 @@ public class ImgMacroContext
      * @param filename the name of the file
      * @return file info
      */
-    public ImageMacroFile get(final String filename)
+    public ImgMacroFile get(final String filename)
     {
         if(map == null)
         {
             map = files.stream()
-                .collect(Collectors.toMap(ImageMacroFile::getFilename, Function.identity()));
+                .collect(Collectors.toMap(ImgMacroFile::getFilename, Function.identity()));
         }
         return map.get(filename);
     }

@@ -13,7 +13,7 @@ import org.radeox.macro.ImgMacro;
  * @author <a href="mailto:marcin.golebski@verbis.pl">Marcin Golebski</a>
  * @version $Id$
  */
-public class ImageMacroFile
+public class ImgMacroFile
 {
     private final String filename;
     private final String mime;
@@ -38,7 +38,7 @@ public class ImageMacroFile
      * @param content lazy inicialized file content - not every attachment will
      *      be displayed in rendered output
      */
-    public ImageMacroFile(final String filename, final String mime, final Supplier<byte[]> content)
+    public ImgMacroFile(final String filename, final String mime, final Supplier<byte[]> content)
     {
         this.filename = filename;
         this.mime = mime;
@@ -70,7 +70,7 @@ public class ImageMacroFile
      * @param mime mime type
      * @param contentId content identifier
      */
-    public ImageMacroFile(final String filename, final String mime, final String contentId)
+    public ImgMacroFile(final String filename, final String mime, final String contentId)
     {
         this.filename = filename;
         this.mime = mime;

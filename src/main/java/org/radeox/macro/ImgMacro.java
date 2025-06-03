@@ -7,7 +7,7 @@ import java.util.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.radeox.api.engine.context.RenderContext;
 import org.radeox.filter.context.ParamContext;
-import org.radeox.macro.img.ImageMacroFile;
+import org.radeox.macro.img.ImgMacroFile;
 import org.radeox.macro.img.ImgMacroContext;
 import org.radeox.macro.parameter.MacroParameter;
 
@@ -27,7 +27,7 @@ import org.radeox.macro.parameter.MacroParameter;
  *
  * @author <a href="mailto:marcin.golebski@verbis.pl">Marcin Golebski</a>
  * @see ImgMacroContext
- * @see ImageMacroFile
+ * @see ImgMacroFile
  */
 public class ImgMacro extends BaseLocaleMacro
 {
@@ -81,7 +81,7 @@ public class ImgMacro extends BaseLocaleMacro
             return;
         }
         final ImgMacroContext imgContext = ImgMacroContext.getOrCreate(context);
-        final ImageMacroFile file = imgContext.get(filename);
+        final ImgMacroFile file = imgContext.get(filename);
         if(file == null || file.isNoContent())
         {
             writeImageNotFound(writer, width, height, left, right, center, filename);
@@ -100,7 +100,7 @@ public class ImgMacro extends BaseLocaleMacro
         writer.write(">");
     }
 
-    private void writeMimeRef(final Writer writer, final ImageMacroFile file)
+    private void writeMimeRef(final Writer writer, final ImgMacroFile file)
         throws IOException
     {
         writer.write("src='cid:");
@@ -110,7 +110,7 @@ public class ImgMacro extends BaseLocaleMacro
 
     private void writeBase64Content(final Writer writer,
         final RenderContext context, final ImgMacroContext imgContext,
-        final ImageMacroFile file) throws IOException
+        final ImgMacroFile file) throws IOException
     {
         writer.write("src='data:");
         writer.write(file.getMime());

@@ -1,6 +1,6 @@
 package org.radeox.macro;
 
-import org.radeox.macro.img.ImageMacroFile;
+import org.radeox.macro.img.ImgMacroFile;
 import org.radeox.macro.img.ImgMacroContext;
 
 /**
@@ -21,7 +21,7 @@ public class ImgMacroTest extends MacroTestSupport
     public void testContent()
     {
         final ImgMacroContext imgContext = ImgMacroContext.getOrCreate(context);
-        imgContext.add(new ImageMacroFile("image01.png", "image/png",
+        imgContext.add(new ImgMacroFile("image01.png", "image/png",
             () -> new byte[] {0, 1, 2, 3}));
 
         final String result1 = engine.render("{img:image00.png}", context);
@@ -64,7 +64,7 @@ public class ImgMacroTest extends MacroTestSupport
     public void testMime()
     {
         final ImgMacroContext imgContext = ImgMacroContext.getOrCreate(context);
-        imgContext.add(new ImageMacroFile("image01.png", "image/png", "QWSDDDRDOD"));
+        imgContext.add(new ImgMacroFile("image01.png", "image/png", "QWSDDDRDOD"));
 
         final String result1 = engine.render("{img:image00.png}", context);
         assertEquals("{img:image00.png}", result1);
