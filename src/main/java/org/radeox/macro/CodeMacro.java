@@ -137,7 +137,7 @@ public class CodeMacro extends Preserved
         if(formatter == null)
         {
             final CodeMacroContext macroContext = CodeMacroContext.getOrCreate(params.getContext());
-            formatter = formatters.get(initialContext.get(macroContext.getDefaultFormatter()));
+            formatter = formatters.get(macroContext.getDefaultFormatter());
             if(formatter == null)
             {
                 LOG.error("Formatter not found: " + macroContext.getDefaultFormatter());

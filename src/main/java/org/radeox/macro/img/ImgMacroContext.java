@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import org.radeox.api.engine.context.RenderContext;
 import org.radeox.filter.LiteralParamFilter;
 import org.radeox.macro.ImgMacro;
@@ -87,6 +89,7 @@ public class ImgMacroContext
      * @param context current rendererm macro
      * @return context object
      */
+    @Nonnull
     public static ImgMacroContext getOrCreate(final RenderContext context)
     {
         return (ImgMacroContext) context.computeIfAbsent(KEY, k -> new ImgMacroContext());
